@@ -7,11 +7,12 @@ adventure games. Here's an example of what Narrate source code looks like:
 @scene wake-up-in-dungeon:
   # This is a comment.
   # A scene may have one "flavortext" directive. This contains text to be
-  # printed before presenting the scene's options.
+  # printed before presenting the scene's options. A string can have newlines in it.
+  # N spaces will be replaced with a single space for any value of N.
   flavortext {
-    You wake up in a dark, musty dungeon.
+    "You wake up in a dark, musty dungeon.
     There's very little light except for a high-placed window with bars.
-    Your head hurts terribly; you don't know why.
+    Your head hurts terribly; you don't know why."
   };
 
   # A scene must have a "select" directive. This lists the options that a
@@ -30,9 +31,9 @@ adventure games. Here's an example of what Narrate source code looks like:
   get "Waterlogged treasure map";
 
   flavortext {
-    You search around your cell by touch. Finally, looking under the pile
+    "You search around your cell by touch. Finally, looking under the pile
     of straw that makes your bedding, you find a piece of paper that feels
-    like it got wet and dried out.
+    like it got wet and dried out."
   };
 
   select {
@@ -40,6 +41,10 @@ adventure games. Here's an example of what Narrate source code looks like:
     # will only be made visible if the predicate of "has" is a string present
     # in the player's inventory.
     has "Golden key" ? "Try to make a run for it" => try-to-escape,
+
+    # The predicate to "has" can have multiple values, separated by commas, and
+    # negation can be done with the "no" keyword.
+    has "Money", no "Golden key" ? "Try to bribe the guards" => get-fleeced-by-guards, 
 
     # Scenes defined in another file can be referenced like so.
     # The file is lazily loaded.
