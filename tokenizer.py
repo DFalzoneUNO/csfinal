@@ -30,7 +30,7 @@ class Tokenizer:
             return self.text[self.current_position]
 
     @property
-    def next_char(self):
+    def next_char(self) -> None | str:
         """This property returns the character directly following the currently
         selected position in the text, or `None` if that position would be past
         the end of the text.
@@ -88,7 +88,9 @@ class Tokenizer:
                     string_characters += '"'
                 else:
                     raise TokenError(
-                        self.current_line, f"")
+                        self.current_line,
+                        f"Unrecognized escape sequence \\{self.current_char}"
+                    )
             else:
                 string_characters += self.current_char
             self.advance()
@@ -162,7 +164,7 @@ class Tokenizer:
                 self.advance()
                 return Token(TokenType.Arrow)
             else:
-                raise TokenError(self.current_line, f"Unexpected character '{self.current_char}'")
+                raise TokenError(self.current_line, f"Unexpected sequence '={self.current_char}'")
         elif self.current_char in (';', ',', '?', '{', '}', '(', ')'):
             char = self.current_char
             self.advance()
