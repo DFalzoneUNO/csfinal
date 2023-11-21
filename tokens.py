@@ -64,9 +64,13 @@ class Token:
             if value is None:
                 raise ValueError("Token type expects string value but none was given")
             else:
-                self.value = value
+                self._value: str = value
         else:
-            self.value = token_type.value
+            self._value: str = token_type.value()
+
+    @property
+    def value(self) -> str:
+        return self._value
 
     def __str__(self):
         """Human-readable string representation, strictly for debugging purposes."""
