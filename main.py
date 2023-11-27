@@ -1,11 +1,11 @@
 import sys
-from tokenizer import Tokenizer, TokenError
+from tokenizer import Tokenizer
+from narrate_parser import NarrateParser
 
 
 def main():
     sample_text = """
     @module example-module:
-
     @scene example-scene:
         flavortext {
             "This is an example scene for testing purposes."
@@ -16,7 +16,7 @@ def main():
         select {
             "Fires with that" => @file("./typo-mischief.nar")::arson-typo,
             has no "fries" ? "Fries with that" => yummy-fries,
-            has "fries" ? "A drink to make it a combo" => combo-meal
+            has "fries" ? "A drink to make it a combo" => @file("./fastfood.nar")::drink-combo
         };
     @end-scene
     @end-module example-module
@@ -25,8 +25,9 @@ def main():
         with open(sys.argv[1]) as file_handle:
             sample_text = file_handle.read()
     tokenizer = Tokenizer(sample_text)
-    tokens = tokenizer.tokenize(debug_mode=True)
-    print(f"===\nNumber of tokens: {len(tokens)}\nNumber of lines: {tokenizer.current_line}")    
+    parser = NarrateParser(tokenizer)
+    ast = parser.parse_file()
+    print(str(ast))   
 
 
 if __name__ == "__main__":

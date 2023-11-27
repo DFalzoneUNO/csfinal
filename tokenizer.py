@@ -17,7 +17,7 @@ class Tokenizer:
         """
         self.text: str = text
         self.current_position: int = 0
-        self.current_line: int = 0
+        self.current_line: int = 1
 
     @property
     def current_char(self) -> None | str:
@@ -136,7 +136,7 @@ class Tokenizer:
         while self.current_char.isalnum() or self.current_char == '-':
             token_value += self.current_char
             self.advance()
-        if token_value in ("flavortext", "select", "get", "lose", "has"):
+        if token_value in ("flavortext", "select", "get", "lose", "has", "no"):
             return Token(TokenType(token_value))
         elif all(char.isalnum() or char == '-' for char in token_value):
             return Token(TokenType.Identifier, token_value)

@@ -23,7 +23,7 @@ class TokenType(StrEnum):
     Comma = ",",
     OpenParen = "(",
     CloseParen = ")",
-    Condition = "?",
+    QuestionMark = "?",
     Arrow = "=>",
     Scope = "::",
 
@@ -50,7 +50,7 @@ class Token:
         TokenType.Colon, TokenType.Semicolon, TokenType.Comma,
         TokenType.OpenBrace, TokenType.CloseBrace,
         TokenType.OpenParen, TokenType.CloseParen,
-        TokenType.Condition, TokenType.Arrow,
+        TokenType.QuestionMark, TokenType.Arrow,
         TokenType.Scope
     ]
 
@@ -66,7 +66,7 @@ class Token:
             else:
                 self._value: str = value
         else:
-            self._value: str = token_type.value()
+            self._value: str = token_type.value
 
     @property
     def value(self) -> str:

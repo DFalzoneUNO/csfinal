@@ -18,12 +18,18 @@
 
 @scene you-lose:
   flavortext { "Better luck next time, pal!" };
+  select {
+    "Guess I'll die then" => guess-you-will
+  };
 @end-scene
 
 @scene you-win:
   flavortext {
     "I don't know the rules of this game, but clearly you do,
     cause you just won, buddy!"
+  };
+  select {
+    "Gloat" => gleeful-boasting
   };
 @end-scene
 
