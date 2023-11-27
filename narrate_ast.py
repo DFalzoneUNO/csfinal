@@ -67,9 +67,9 @@ class SceneReference(AstNode):
     
     def __str__(self):
         if self.module_id is None:
-            return f"(SceneReference {self.scene_id.value})"
+            return f"{self.scene_id.value}"
         else:
-            return f"(SceneReference {self.module_id.value}::{self.scene_id.value})"
+            return f"{self.module_id.value}::{self.scene_id.value}"
 
 
 class SelectOption(AstNode):
@@ -89,7 +89,9 @@ class FlavortextDirective(Directive):
     def __init__(self, text: Token):
         super().__init__("flavortext")
         if text.token_type is not TokenType.String:
-            raise ValueError(f"Flavortext content should be a string, got {text.token_type}.")
+            raise ValueError(
+                f"Flavortext content should be a string, got {text.token_type}."
+            )
         self.text = text
 
     def __str__(self):
@@ -184,6 +186,7 @@ class FileContent(AstNode):
                             return scene
             raise ValueError(f"Tried to find a scene named {scene_id} in a module named {module_id}, but couldn't.")
         else:
+            scene_id = identifier
             for scene in self.scene_list:
                 if scene.identifier.value == identifier:
                     return scene

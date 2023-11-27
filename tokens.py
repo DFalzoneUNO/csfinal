@@ -66,7 +66,7 @@ class Token:
             else:
                 self._value: str = value
         else:
-            self._value: str = token_type.value
+            self._value: str = str(token_type.value)
 
     @property
     def value(self) -> str:

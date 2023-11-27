@@ -20,9 +20,9 @@ class Tokenizer:
         self.current_line: int = 1
 
     @property
-    def current_char(self) -> None | str:
+    def current_char(self) -> str | None:
         """This property returns the character at the currently selected position
-        in the text, or `None` if the end of the text has been reached.
+        in the text, or None if the end of the text has been reached.
         """
         if self.current_position >= len(self.text):
             return None
@@ -92,7 +92,7 @@ class Tokenizer:
                         f"Unrecognized escape sequence \\{self.current_char}"
                     )
             else:
-                string_characters += self.current_char
+                string_characters += str(self.current_char)
             self.advance()
         self.advance()
         return Token(
@@ -104,9 +104,11 @@ class Tokenizer:
         """Tokenize a "delimeter", which is any of the Narrate keywords that begin
         with the sigil '@'. These keywords define the structure of a Narrate program
         in terms of modules, scenes, and files."""
-        delimeter: str = self.current_char
+        delimeter: str = str(self.current_char)
         self.advance()
-        while self.current_char.isalpha() or self.current_char == '-':
+        while self.current_char is not None and (
+            self.current_char.isalpha() or self.current_char == '-'
+        ):
             delimeter += self.current_char
             self.advance()
         valid_delimeters = ("@module", "@end-module", "@scene", "@end-scene", "@file")
@@ -133,7 +135,9 @@ class Tokenizer:
         keywords are reserved and cannot be used as identifiers.
         """
         token_value = ""
-        while self.current_char.isalnum() or self.current_char == '-':
+        while self.current_char is not None and (
+            self.current_char.isalpha() or self.current_char == '-'
+        ):
             token_value += self.current_char
             self.advance()
         if token_value in ("flavortext", "select", "get", "lose", "has", "no"):
