@@ -10,7 +10,7 @@ class AstNode(ABC):
 
 class Directive(AstNode):
     def __init__(self, directive_kw: Literal["flavortext", "get", "lose", "has", "select"]):
-        self.directive_type = directive_kw
+        self.directive_type: Literal["flavortext", "get", "lose", "has", "select"] = directive_kw
 
 
 class SelectCondition(AstNode):
