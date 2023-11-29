@@ -49,6 +49,13 @@ class FileReference(AstNode):
         else:
             raise ValueError(f"Scene ID should be TokenType.Identifier, got {scene_id.token_type}.")
 
+    @property
+    def scoped_scene_id(self) -> str:
+        if self.module_id is not None:
+            return f"{self.module_id.value}::{self.scene_id.value}"
+        else:
+            return self.scene_id.value
+
     def __str__(self):
         if self.module_id is None:
             return f"(FileReference \"{self.filename}\"::{self.scene_id.value})"

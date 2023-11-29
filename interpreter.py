@@ -1,3 +1,4 @@
+import sys
 from typing import List, cast
 from narrate_ast import *
 from narrate_parser import NarrateParser
@@ -53,5 +54,34 @@ class Interpreter:
 
     
     def execute_select_directive(self, sd: SelectDirective):
-        # TODO
-        pass
+        print("Options:")
+        visible_options: List[SelectOption] = []
+        for option in sd.options:
+            if self.evaluate_has_directive(option.condition):
+                visible_options.append(option)
+        for i in range(len(visible_options)):
+            print(f"[{i+1}] {visible_options[i].string_label}")
+        selection_input = int(input('> ')) - 1 # TODO exception handling
+        selection = visible_options[selection_input]
+        if type(selection.target) is SceneReference:
+            # TODO document reserved target id "exit"
+            if str(selection.target) == "exit":
+                print(f"Game over. Your inventory contents:")
+                for item in self.inventory:
+                    print(item)
+                sys.exit(0)
+            else:
+                self.execute_scene(str(selection.target))
+        else:
+            assert type(selection.target) is FileReference
+            target_id = selection.target.scoped_scene_id
+            self.set_interpreter_context(selection.target.filename, target_id)
+            self.execute_scene(target_id)
+
+    def evaluate_has_directive(self, hd: SelectCondition | None) -> bool:
+        if hd is None:
+            return True
+        inv = self.inventory_lower
+        included: List[str] = [item.value.lower() for item in hd.included]
+        excluded: List[str] = [item.value.lower() for item in hd.excluded]
+        return all([item in inv for item in included]) and all([item not in inv for item in excluded])
