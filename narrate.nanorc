@@ -1,0 +1,33 @@
+## narrate syntax highlighting rules for Nano
+
+syntax "narrate" "\.nar$"
+magic "narrate script"
+comment "#"
+
+## directives
+color brightblue "\<(flavortext|select|has|get|lose|no)\>"
+
+## @-keywords
+color brightmagenta "@"
+color brightmagenta "\<(module|end-module|scene|end-scene|file)\>"
+
+## operators
+color cyan "[:;,=>?\]"
+
+## parentheses
+color brightyellow "[(){}]" "\[" "\]"
+
+## strings
+color yellow "["][^"]*[^\\]["]" "["]{3}.*[^\\]["]{3}"
+
+## comments
+color green "^#.*|[[:space:]]#.*$"
+
+## strings 2
+color yellow start=""[^"]" end="""
+
+## trailing spaces
+color ,green "[[:space:]]+$"
+
+## reminders
+color brightwhite,yellow "(FIXME|TODO|XXX)"
