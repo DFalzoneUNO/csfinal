@@ -1,4 +1,4 @@
-# very simple one-file adventure to test the first version of the interpreter
+# very simple adventure to test the first version of the interpreter
 
 @scene main:
   flavortext {
