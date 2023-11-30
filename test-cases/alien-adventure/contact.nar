@@ -1,0 +1,39 @@
+@scene attempt-first-contact:
+  flavortext {
+    "You do not know anything about the intelligent inhabitants of Sol 3 beyond
+    some very vague likelihoods about their biological constraints. So, like any
+    rational contact specialist, you transmit the universal proof of intelligence
+    signal: the number 137, approximately equal to the reciprocal of the fine
+    structure constant, expressed as an unsigned base-2 integer using timed pulses.
+    You broadcast the 137 signal at high power on a wide range of radio frequencies
+    to get their attention."
+  };
+
+  select {
+    "What happens next?" => human-response,
+    "Quit game" => exit
+  };
+@end-scene
+
+@scene human-response:
+  flavortext {
+    "On the planet's surface, various troops of bipedal apes begin to notice unusually
+    strong radio interference from a particular point in the sky. Initially, a few
+    astronomers hypothesize that it might be from a nearby newly formed pulsar with a
+    highly eccentric axis of rotation, but this is quickly ruled out, first by the fact
+    that the signal has a high amplitude over a wide range of radio frequencies, then by
+    the fact that the signal appears to be a binary representation of 137 on a loop, and
+    then by the fact that the signal's point of origin is a round metal object in a stable
+    low orbit. World leaders around the globe hold emergency meetings to discuss how to
+    prepare for the public response to the unexpected arrival of alien life to the Earth.
+    
+    You, the alien life, don't know about any of that yet. However, your receiver picks
+    up a cacophony of amateur radio enthusiasts, most of whom are imitating the 137 signal
+    back, confirming that the planet definitely hosts intelligent life with willingness
+    and ability to communicate."
+  };
+
+  select {
+    "TODO write more scenes" => exit
+  };
+@end-scene

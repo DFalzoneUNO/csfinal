@@ -1,0 +1,66 @@
+# very simple one-file adventure to test the first version of the interpreter
+
+@scene main:
+  flavortext {
+    "You are an alien from a habitable world a few hundred light-years from
+    Sol. When your civilization began to detect unusually rapid variations
+    in the atmospheric crbon dioxide of one of Sol's rocky planets, suggesting
+    the presence of an intelligent species beginning industrialization, they
+    asked you to be dessicated so you could stay dormant for an interstellar
+    expedition. Centuries later, you have been rehydrated and find yourself
+    in orbit around Sol 3, a planet with unusually habitable conditions and
+    obvious evidence of intelligent life."
+  };
+
+  select {
+    "Observe the planet's radio emissions" => earth-orbit::observe-radio,
+    "Observe the planet's surface" => earth-orbit::observe-surface
+  };
+@end-scene
+
+@module earth-orbit:
+
+@scene observe-radio:
+  flavortext {
+    "Tuning into the low-frequency electromagnetic radiation from the planet,
+    you find a large volume of clearly artificial transmissions from a wide
+    range of the electromagnetic spectrum. Though you are unsure how to
+    interpret these transmissions, the computer tells you that their complexity
+    indicates intelligent origin with a very high confidence value."
+  };
+  get "Terran radio transmission samples";
+
+  select {
+    has no "map of earth's surface" ?
+      "Observe the planet's surface" => earth-orbit::observe-surface,
+    "Attempt to contact the inhabitants of Sol 3" => @file("./contact.nar")::attempt-first-contact,
+    "Quit game" => exit
+  };
+@end-scene
+
+@scene observe-surface:
+  flavortext {
+    "Optical observation of the planet reveals a world with a remarkably high
+    habitability index of 0.88 for carboniferous organics. 70% of the surface
+    is liquid water, most of it a dilute solution of alkali metal salts and
+    trace minerals. The planet's continents suggest active geologic activity,
+    and notably they reflect high amounts of light in the range of 520 to 630
+    nanometers, suggesting a dense population of organisms that subsist by
+    metabolizing radiation from Sol. Most striking of all, the landmass on the
+    planet's dark side is riddled with bright lights clearly not caused by
+    combustion or volcanic activity, suggesting that the intelligent species on
+    this planet lives exclusively on land and navigates using high-frequency
+    electromagnetic radiation."
+  };
+  get "Map of Earth's surface";
+
+  select {
+    has no "terran radio transmission samples" ?
+      "Observe the planet's radio emissions" => earth-orbit::observe-radio,
+    has "terran radio transmission samples" ?
+      "Attempt to contact the inhabitants of Sol 3" => @file("./contact.nar")::attempt-first-contact,
+    "Quit game" => exit
+  };
+@end-scene
+
+@end-module earth-orbit

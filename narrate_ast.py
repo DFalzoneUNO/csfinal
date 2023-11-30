@@ -73,6 +73,9 @@ class SceneReference(AstNode):
         self.scene_id = scene_id
     
     def __str__(self):
+        """For convenience, this class's `__str__` method returns the scoped scene identifier as
+        it would appear in Narrate source code.
+        """
         if self.module_id is None:
             return f"{self.scene_id.value}"
         else:
