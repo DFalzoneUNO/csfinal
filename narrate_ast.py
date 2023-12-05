@@ -4,17 +4,24 @@ from tokens import TokenType, Token
 
 
 class AstNode(ABC):
+    """Abstract base class for nodes of a Narrate abstract syntax tree."""
     def __str__(self):
-        raise NotImplementedError(f"Internal error: AstNode.__str__ is an abstract method; child classes must override it.")
+        raise NotImplementedError(
+            "Internal error: AstNode.__str__ is an abstract method; child classes must override it."
+        )
 
 
 class Directive(AstNode):
+    """Base class for directives, which are different from other AST nodes because
+    directives specify the interpreter's runtime behavior rather than the static
+    structure of the code.
+    """
     def __init__(self, directive_kw: Literal["flavortext", "get", "lose", "has", "select"]):
         self.directive_type: Literal["flavortext", "get", "lose", "has", "select"] = directive_kw
 
 
-class SelectCondition(AstNode):
-    """Class representing the optional `has` directive that may precede a select
+class SelectCondition(Directive):
+    """Represents the optional `has` directive that may precede a select
     option to make that option conditionally visible, e.g.
     `has "Sword", no "Shield" ? "Fight with no shield" => get-stabbed,`
     """
@@ -23,6 +30,7 @@ class SelectCondition(AstNode):
         :param included: list of items that must be in the player's inventory for the condition to be true
         :param excluded: list of items that cannot be in the player's inventory for the condition to be true
         """
+        super().__init__("has")
         if any(token.token_type is not TokenType.String for token in [*included, *excluded]):
             raise ValueError("Parameters to `has` directive must all be strings!")
         self.included: List[Token] = included
@@ -35,6 +43,10 @@ class SelectCondition(AstNode):
 
 
 class FileReference(AstNode):
+    """Represents a reference to a scene defined in another file, which can be used as
+    the target of a select option. E.g. `@file("./foo.nar")::bar::baz` refers to scene
+    `baz` defined in module `bar` defined in the file `./foo.nar`.
+    """
     def __init__(self, filename: str, module_id: Token | None, scene_id: Token):
         self.filename = filename
         if module_id is not None:
@@ -51,6 +63,13 @@ class FileReference(AstNode):
 
     @property
     def scoped_scene_id(self) -> str:
+        """A module ID is the identifier that refers to a module, not including a specific scene.
+
+        A scene ID is the identifier of a scene, with or without the specific module ID preceding it.
+
+        A scoped scene ID is specifically a module ID *with* the ID of a scene contained within that
+        module. That's what this property returns: the scoped scene ID attached to a file reference.
+        """
         if self.module_id is not None:
             return f"{self.module_id.value}::{self.scene_id.value}"
         else:
@@ -64,6 +83,9 @@ class FileReference(AstNode):
 
 
 class SceneReference(AstNode):
+    """Represents a scene ID which can be used as a select option target referring to a scene
+    defined in the same file.
+    """
     def __init__(self, module_id: Token | None, scene_id: Token):
         if module_id is not None and module_id.token_type is not TokenType.Identifier:
             raise ValueError(f"Module ID should be TokenType.Identifier, got {module_id.token_type}.")
@@ -83,6 +105,7 @@ class SceneReference(AstNode):
 
 
 class SelectOption(AstNode):
+    """Represents one of the options that may be presented to the player when a scene is executed."""
     def __init__(self, condition: None | SelectCondition, string_label: str, target: SceneReference | FileReference):
         self.condition = condition
         self.string_label = string_label
@@ -96,6 +119,9 @@ class SelectOption(AstNode):
 
 
 class FlavortextDirective(Directive):
+    """A flavortext directive displays text to the player providing context
+    and immersion during the execution of a scene.
+    """
     def __init__(self, text: Token):
         super().__init__("flavortext")
         if text.token_type is not TokenType.String:
@@ -109,6 +135,9 @@ class FlavortextDirective(Directive):
 
 
 class SelectDirective(Directive):
+    """A select directive contains a list of options which may be presented to the player to prompt
+    for which scene to go to next.
+    """
     def __init__(self, options: List[SelectOption]):
         super().__init__("select")
         self.options = options
@@ -119,6 +148,7 @@ class SelectDirective(Directive):
 
 
 class InventoryDirective(Directive):
+    """A `get` or `lose` directive modifies the contents of the player's inventory."""
     def __init__(self, directive_kw: Literal["get", "lose"], item: Token):
         super().__init__(directive_kw)
         if item.token_type is not TokenType.String:
@@ -140,6 +170,9 @@ class LoseDirective(InventoryDirective):
 
 
 class Scene(AstNode):
+    """An adventure is organized into scenes, specific points in the story where the player is given
+    story text to read and options to decide where to take the story next.
+    """
     def __init__(self, identifier: Token, directives: List[Directive]):
         if identifier.token_type is not TokenType.Identifier:
             raise ValueError(f"Scene should have an identifier, but instead there is a {identifier.token_type}.")
@@ -160,6 +193,9 @@ class Scene(AstNode):
 
 
 class Module(AstNode):
+    """Scenes can be organized into modules so that many related scenes can be conceptually grouped
+    together in the programmer's mind, and so that scene identifiers don't pollute the global namespace.
+    """
     def __init__(self, module_id: Token, scenes: List[Scene]):
         if module_id.token_type is not TokenType.Identifier:
             raise ValueError(f"Expected module identifier to be TokenType.Identifier but got {module_id.token_type} instead.")
@@ -172,11 +208,11 @@ class Module(AstNode):
 
 
 class FileContent(AstNode):
+    """Represents the root of the AST, which contains all the scenes and modules in a file. A higher
+    level of organization than this is not necessary for the interpreter, since the filesystem itself
+    is already an effective way to organize files.
+    """
     def __init__(self, modules: List[Module], scenes: List[Scene]):
-        """Putting your scenes inside modules is optional in Narrate, and a file can contain
-        multiple modules. This node is the parent to all the scenes and modules in a file, making
-        it effectively the "root" of the abstract syntax tree.
-        """
         if len(modules) == 0 and len(scenes) == 0:
             raise ValueError(f"A file must contain at least one module or scene.")
         self.module_list = modules
