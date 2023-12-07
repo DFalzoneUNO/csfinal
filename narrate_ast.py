@@ -105,7 +105,9 @@ class SceneReference(AstNode):
 
 
 class SelectOption(AstNode):
-    """Represents one of the options that may be presented to the player when a scene is executed."""
+    """Represents one of the options that may be presented to the player when a scene is executed.
+    E.g. `has "shield" ? "Try to Fight" => fighting-time`
+    """
     def __init__(self, condition: None | SelectCondition, string_label: str, target: SceneReference | FileReference):
         self.condition = condition
         self.string_label = string_label
@@ -160,11 +162,13 @@ class InventoryDirective(Directive):
 
 
 class GetDirective(InventoryDirective):
+    """Adds an item to the player's inventory."""
     def __init__(self, item: Token):
         super().__init__("get", item)
 
 
 class LoseDirective(InventoryDirective):
+    """Removes an item from the player's inventory."""
     def __init__(self, item: Token):
         super().__init__("lose", item)
 

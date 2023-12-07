@@ -197,15 +197,3 @@ class Tokenizer:
             return self.tokenize_identifier_or_directive()
         else:
             return self.tokenize_punctuation()
-
-    def tokenize(self, debug_mode: bool = False) -> List[Token]:
-        """Return the entirety of the text as a list of tokens.
-        If `debug_mode=True`, print each token as it is gotten.
-        """
-        result: List[Token] = []
-        while len(result) == 0 or result[-1].token_type is not TokenType.Eof:
-            token = self.get_next_token()
-            if debug_mode:
-                print(token)
-            result.append(token)
-        return result

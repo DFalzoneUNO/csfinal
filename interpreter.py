@@ -5,11 +5,14 @@ from narrate_parser import NarrateParser
 from tokenizer import Tokenizer
 
 class Interpreter:
-    def __init__(
-        self,
-        src_filename: str,
-        entry_point_scene_id: str = "main"
-    ):
+    """This class is where the action happens. More formally, this class holds the contextual
+    state needed to execute Narrate code, and the methods that perform the behavior specified
+    by that code.
+    """
+    def __init__(self, src_filename: str, entry_point_scene_id: str):
+        """The `entry_point_scene_id` defaults to `main` (see `main.py` for details). Narrate
+        programs should start with `@scene main` in a file's global scope (not in a module).
+        """
         self.inventory: List[str] = []
         self.set_interpreter_context(src_filename, entry_point_scene_id)
 
@@ -23,6 +26,15 @@ class Interpreter:
         src_filename: str,
         scene_id: str
     ):
+        """Given a filename and a scoped scene ID, this method will load and parse that
+        file and update the execution context to move to the specified scene.
+        
+        Note that this method doesn't touch `self.inventory`; that way, the player can
+        keep their inventory from one file to the next.
+
+        :param src_filename: path to the file from which to load the new context
+        :param scene_id: which scene in that file should run next
+        """
         self.src_filename = src_filename
         with open(self.src_filename, "r") as src_file:
             self.src_code: str = src_file.read()
@@ -104,6 +116,9 @@ class Interpreter:
             return False
 
     def evaluate_has_directive(self, hd: SelectCondition | None) -> bool:
+        """Given a select condition (e.g. `has "power staff", no "potions" ?`) this method
+        checks to see if the player's current inventory contents satisfy that condition.
+        """
         if hd is None:
             return True
         inv = self.inventory_lower

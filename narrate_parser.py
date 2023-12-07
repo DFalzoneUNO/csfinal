@@ -5,6 +5,7 @@ from narrate_ast import *
 
 
 class ParsingError(Exception):
+    """This is what gets raised when the parser encounters something it shouldn't."""
     def __init__(self, message: str, line_number: int):
         super().__init__(f"Parsing error on line {line_number}: {message}")
 
@@ -16,13 +17,22 @@ class NarrateParser:
 
     @property
     def current_line(self) -> int:
+        """This information passed to the constructor for `ParsingError`
+        so that users can be told which line is erroneous.
+        """
         return self._tokenizer.current_line
 
     @property
     def current_token(self) -> Token:
+        """Allows the current token to be accessed in a read-only manner, because
+        we don't want it to be modified anywhere but in `self.consume`.
+        """
         return self._current_token
 
     def consume(self, expected_token_type: TokenType):
+        """If the current token's type is `expected_token_type`, then move
+        to the next token; otherwise, raise a `ParsingError`.
+        """
         if self.current_token.token_type is expected_token_type:
             self._current_token = self._tokenizer.get_next_token()
         else:
@@ -45,12 +55,15 @@ class NarrateParser:
                     modules.append(self.parse_module())
                 case other:
                     raise ParsingError(
-                        f'Expected "@scene" or "@module", but got {other} instead.',
+                        f'Expected "@scene" or "@module", butto got {other} instead.',
                         self.current_line
                     )
         return FileContent(modules, scenes)
 
     def parse_scene(self) -> Scene:
+        """Parse a scene, i.e. a semicolon-separated sequence of directives preceded
+        by `@scene <identifier>:` and ending with `@end-scene`.
+        """
         self.consume(TokenType.Scene)
         scene_id = self.current_token
         self.consume(TokenType.Identifier)
@@ -62,6 +75,14 @@ class NarrateParser:
         return Scene(scene_id, directives)
 
     def parse_module(self) -> Module:
+        """Parse a module, i.e. a sequence of scenes preceded by `@module <identifier>:`
+        and ending with `@end-module <identifier>`.
+        
+        The reason why the module identifier must be repeated after `@end-module` is
+        because a module may often be longer than the height of the programmer's screen,
+        and I don't like the idea of seeing `@end-module` somewhere in one's code and
+        having to scroll back up to find out exactly what module ends there.
+        """
         self.consume(TokenType.Module)
         module_id = self.current_token
         self.consume(TokenType.Identifier)
@@ -80,6 +101,9 @@ class NarrateParser:
         return Module(module_id, scene_list)
 
     def parse_directive(self) -> Directive:
+        """Parse a directive, which is a statement inside a scene that specifies that scene's runtime
+        behavior.
+        """
         match self.current_token.token_type:
             case TokenType.Flavortext:
                 return self.parse_flavortext_directive()
@@ -93,6 +117,9 @@ class NarrateParser:
                 raise ParsingError(f'Expected directive "flavortext", "select", "get", or "lose", but got {other.value}.', self.current_line)
 
     def parse_flavortext_directive(self) -> FlavortextDirective:
+        """Parse a flavortext directive, which specifies what a scene should print for the
+        player to read.
+        """
         self.consume(TokenType.Flavortext)
         self.consume(TokenType.OpenBrace)
         text = self.current_token
@@ -102,6 +129,9 @@ class NarrateParser:
         return FlavortextDirective(text)
 
     def parse_select_directive(self) -> SelectDirective:
+        """Parse a select directive, which specifies the options available to the player
+        to pick the next scene to move to.
+        """
         self.consume(TokenType.Select)
         self.consume(TokenType.OpenBrace)
         options: List[SelectOption] = []
@@ -116,6 +146,7 @@ class NarrateParser:
         return SelectDirective(options)
 
     def parse_get_directive(self) -> GetDirective:
+        """Parse a get directive, which adds an item to the player's inventory."""
         self.consume(TokenType.Get)
         item = self.current_token
         self.consume(TokenType.String)
@@ -123,6 +154,7 @@ class NarrateParser:
         return GetDirective(item)
 
     def parse_lose_directive(self) -> LoseDirective:
+        """Parse a lose directive, which removes an item from the player's inventory."""
         self.consume(TokenType.Lose)
         item = self.current_token
         self.consume(TokenType.String)
