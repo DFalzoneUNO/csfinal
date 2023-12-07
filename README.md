@@ -1,6 +1,7 @@
-My CS final project is a new programming language called Narrate. Narrate is an
-interpreted domain-specific scripting language designed for creating text-based
-adventure games. Here's an example of what Narrate source code looks like:
+For Project 2 for my CS final, I have created a new programming language called
+Narrate. Narrate is an interpreted domain-specific scripting language designed
+for creating text-based adventure games. Here's an example of what Narrate
+source code looks like:
 ```
 @module dungeon:
 
