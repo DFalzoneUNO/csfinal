@@ -1,4 +1,6 @@
+from configparser import ParsingError
 import sys
+from tokenize import TokenError
 from typing import List, cast
 from narrate_ast import *
 from narrate_parser import NarrateParser

@@ -33,8 +33,14 @@ def main():
         help='scoped scene id to start execution in; defaults to "main"'
     )
     args = argparser.parse_args()
-    interpreter = Interpreter(args.filename, args.entry or "main")
-    interpreter.main_loop()
+    interpreter = None
+    try:
+        interpreter = Interpreter(args.filename, args.entry or "main")
+        interpreter.main_loop()
+    except BaseException as e:
+        filename = args.filename if interpreter is None else interpreter.src_filename
+        print(f"Error in file {filename}")
+        print(str(e))
 
 
 if __name__ == "__main__":

@@ -53,9 +53,9 @@ class NarrateParser:
                     scenes.append(self.parse_scene())
                 case TokenType.Module:
                     modules.append(self.parse_module())
-                case other:
+                case _:
                     raise ParsingError(
-                        f'Expected "@scene" or "@module", butto got {other} instead.',
+                        f'Expected "@scene" or "@module", but got {self.current_token} instead.',
                         self.current_line
                     )
         return FileContent(modules, scenes)
