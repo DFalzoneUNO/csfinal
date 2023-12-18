@@ -38,7 +38,7 @@ def main():
     try:
         interpreter = Interpreter(args.filename, args.entry or "main")
         interpreter.main_loop()
-    except BaseException as e:
+    except Exception as e:
         filename = args.filename if interpreter is None else interpreter.src_filename
         print(f"Error in file {filename}")
         print(str(e))
