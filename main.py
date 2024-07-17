@@ -10,7 +10,7 @@ def main():
         formatter_class=RawDescriptionHelpFormatter,
         description="Interpreter for the Narrate programming language",
         epilog=textwrap.dedent("""\
-            Copyright (C) 2023  Dante Falzone
+            Copyright (C) 2024  Willow Falzone
 
             This program is free software: you can redistribute it and/or modify
             it under the terms of the GNU General Public License as published by
